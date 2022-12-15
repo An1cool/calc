@@ -9,8 +9,9 @@ public class Main {
 
     static int resArab;
     static String resRim;
+
     static List<String> arabList = new ArrayList<>();
-    static List<String> rimList = new ArrayList<>(){{
+    final static List<String> rimList = new ArrayList<>() {{
         add("I");
         add("II");
         add("III");
@@ -23,7 +24,7 @@ public class Main {
         add("X");
     }};
 
-    static Map<String, Integer> rimMap = new LinkedHashMap<>() {{
+    final static Map<String, Integer> rimMap = new LinkedHashMap<>() {{
         put("C", 100);
         put("XC", 90);
         put("LXXX", 80);
@@ -47,27 +48,18 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
-        for(int i = 0; i <= 10; i++){
+        for (int i = 0; i <= 10; i++) {
             arabList.add(String.valueOf(i));
         }
 
-        for(int i = 0; i < 3; i++) {
-            s[i] = sc.next();
-        }
+        String input = sc.nextLine();
 
-        if(arabList.contains(s[0]) && arabList.contains(s[2])) {
-            arabCalc();
-        } else if ((arabList.contains(s[0]) && rimList.contains(s[2])) || (rimList.contains(s[0]) && arabList.contains(s[2]))) {
-            throw new Exception();
-        } else {
-            rimCalc();
-        }
-
+        System.out.println(calc(input));
     }
 
     public static void arabCalc() {
         for (int i = 0; i < 3; i++) {
-            if(i == 0 || i == 2) {
+            if (i == 0 || i == 2) {
                 v[i] = Integer.parseInt(s[i]);
             }
         }
@@ -79,17 +71,16 @@ public class Main {
             case "*" -> resArab = v[0] * v[2];
         }
 
-        System.out.println(resArab);
     }
 
     public static void rimCalc() throws Exception {
-        if(!rimMap.containsKey(s[0]) || rimMap.containsKey(s[2])) {
-            throw new Exception();
+        if (!rimMap.containsKey(s[0]) || !rimMap.containsKey(s[2])) {
+            throw new Exception("Допустимы значения от I до X");
         }
-        for(int i = 0; i < 3; i++){
-            for(Map.Entry<String, Integer> entry : rimMap.entrySet()) {
+        for (int i = 0; i < 3; i++) {
+            for (Map.Entry<String, Integer> entry : rimMap.entrySet()) {
                 if (s[i].equals(entry.getKey())) {
-                    v[i] = (int) entry.getValue();
+                    v[i] =  entry.getValue();
                 }
             }
         }
@@ -100,8 +91,8 @@ public class Main {
             case "/" -> resArab = v[0] / v[2];
             case "*" -> resArab = v[0] * v[2];
         }
-        for(Map.Entry<String, Integer> entry : rimMap.entrySet()) {
-            if(resArab >= 10) {
+        for (Map.Entry<String, Integer> entry : rimMap.entrySet()) {
+            if (resArab >= 10) {
                 if (resArab - resArab % 10 == entry.getValue()) {
                     resRim = entry.getKey();
                 }
@@ -109,12 +100,29 @@ public class Main {
                     resRim += entry.getKey();
                 }
             } else {
-                if (resArab == entry.getValue()){
+                if (resArab == entry.getValue()) {
                     resRim = entry.getKey();
                 }
             }
         }
-        System.out.println(resRim);
     }
 
+    public static String calc(String input) throws Exception {
+        s = input.split(" ");
+
+        if (s.length > 3) {
+            throw new Exception("Неверное выражение. Можно ввести только два числа. Пример: 1 + 4, X - II");
+        }
+
+        if (arabList.contains(s[0]) && arabList.contains(s[2])) {
+            arabCalc();
+            return String.valueOf(resArab);
+        } else if ((arabList.contains(s[0]) && rimList.contains(s[2])) || (rimList.contains(s[0]) && arabList.contains(s[2]))) {
+            throw new Exception("Неверное выражение. Числа/цифры должны находиться в одной системе счисления. Примеры: 1 + 4, X - II");
+        } else {
+            rimCalc();
+            return resRim;
+        }
+    }
 }
+
